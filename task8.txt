@@ -1,0 +1,76 @@
+Enter password: ****
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.42 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> create database task8;
+Query OK, 1 row affected (0.05 sec)
+
+mysql> use task8;
+Database changed
+mysql> CREATE TABLE employees (
+    ->     emp_id INT PRIMARY KEY,
+    ->     emp_name VARCHAR(100),
+    ->     salary DECIMAL(10, 2),
+    ->     department VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> INSERT INTO employees VALUES
+    -> (1, 'Alice', 55000, 'HR'),
+    -> (2, 'Bob', 65000, 'IT'),
+    -> (3, 'Charlie', 70000, 'IT'),
+    -> (4, 'Diana', 60000, 'Finance');
+Query OK, 4 rows affected (0.05 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE GiveBonus(
+    ->     IN empId INT,
+    ->     IN bonusAmount DECIMAL(10, 2)
+    -> )
+    -> BEGIN
+    ->     UPDATE employees
+    ->     SET salary = salary + bonusAmount
+    ->     WHERE emp_id = empId;
+    -> END $$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql>
+mysql> CALL GiveBonus(2, 3000);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE FUNCTION GetSalary(empId INT)
+    -> RETURNS DECIMAL(10, 2)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE empSalary DECIMAL(10,2);
+    ->     SELECT salary INTO empSalary FROM employees WHERE emp_id = empId;
+    ->     RETURN empSalary;
+    -> END $$
+Query OK, 0 rows affected (0.03 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> SELECT GetSalary(2) AS SalaryOfEmployee;
++------------------+
+| SalaryOfEmployee |
++------------------+
+|         68000.00 |
++------------------+
+1 row in set (0.02 sec)
+
+mysql>
